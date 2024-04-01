@@ -19,12 +19,12 @@ public class UserJsonTest {
     public void deveVerificarPrimeiroNivel(){
         given()
         .when()
-                .get("https://restapi.wcaquino.me/users/1")
+            .get("https://restapi.wcaquino.me/users/1")
         .then()
-                .statusCode(200)
-                .body("id", is(1))
-                .body("name", containsString("Silva"))
-                .body("age", greaterThan(18));
+            .statusCode(200)
+            .body("id", is(1))
+            .body("name", containsString("Silva"))
+            .body("age", greaterThan(18));
     }
 
     @Test
@@ -47,23 +47,23 @@ public class UserJsonTest {
     @Test
     public void deveVerificarSegundoNivel(){
         given()
-                .when()
-                .get("https://restapi.wcaquino.me/users/2")
-                .then()
-                .statusCode(200)
-                .body("name", containsString("Joaquina"))
-                .body("endereco.rua", is("Rua dos bobos"));
+        .when()
+            .get("https://restapi.wcaquino.me/users/2")
+        .then()
+            .statusCode(200)
+            .body("name", containsString("Joaquina"))
+            .body("endereco.rua", is("Rua dos bobos"));
     }
 
     @Test
     public void deveVerificarLista(){
         given()
-                .when()
-                .get("https://restapi.wcaquino.me/users/3")
-                .then()
-                .statusCode(200)
-                .body("name", containsString("Joaquina"))
-                .body("endereco.rua", is("Rua dos bobos"));
+        .when()
+            .get("https://restapi.wcaquino.me/users/3")
+        .then()
+            .statusCode(200)
+            .body("name", containsString("Joaquina"))
+            .body("endereco.rua", is("Rua dos bobos"));
     }
 
     @Test

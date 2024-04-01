@@ -1,6 +1,5 @@
 package br.com.Salazar;
 
-import io.restassured.RestAssured;
 import io.restassured.http.Method;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
