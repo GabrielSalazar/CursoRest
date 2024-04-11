@@ -1,8 +1,14 @@
 package br.com.Salazar;
 
-import groovyjarjarantlr4.v4.runtime.tree.ErrorNodeImpl;
+import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.filter.log.LogDetail;
 import io.restassured.path.xml.element.Node;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -11,35 +17,58 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
 public class UserXMLTest {
+    public static ResponseSpecification resSpec;
+    public static RequestSpecification reqSpec;
+
+    @BeforeClass
+    public static void setup(){
+        RestAssured.baseURI = "https://restapi.wcaquino.me";
+        //RestAssured.port = 80;
+        //RestAssured.basePath = "/v2";
+
+        RequestSpecBuilder requestSpecBuilder = new RequestSpecBuilder();
+        requestSpecBuilder.log(LogDetail.ALL);
+        reqSpec = requestSpecBuilder.build();
+
+        ResponseSpecBuilder resBuilder = new ResponseSpecBuilder();
+        resBuilder.expectStatusCode(200);
+        resSpec = resBuilder.build();
+
+        RestAssured.requestSpecification = reqSpec;
+        RestAssured.responseSpecification = resSpec;
+    }
 
     @Test
     public void devoTrabalharComXML(){
+
         given()
+            //.spec(reqSpec)
          .when()
-            .get("https://restapi.wcaquino.me/usersXML/3")
+            .get("/usersXML/3")
          .then()
-            .statusCode(200)
-            .rootPath("user")
-            .body("name", is("Ana Julia"))
-            .body("@id", is("3"))
+           // .spec(resSpec)
+        .rootPath("user")
+        .body("name", is("Ana Julia"))
+        .body("@id", is("3"))
 
-            .rootPath("user.filhos")
-            .body("name.size()", is(2))
+        .rootPath("user.filhos")
+        .body("name.size()", is(2))
 
-            .detachRootPath("filhos")
-            .body("filhos.name[0]", is("Zezinho"))
+        .detachRootPath("filhos")
+        .body("filhos.name[0]", is("Zezinho"))
 
-            .appendRootPath("filhos")
-            .body("name", hasItem("Luizinho"))
-            .body("name", hasItems("Luizinho","Zezinho"));
+        .appendRootPath("filhos")
+        .body("name", hasItem("Luizinho"))
+        .body("name", hasItems("Luizinho","Zezinho"));
     }
     @Test
     public void devoFazerPesquisasAvancadasComXML() {
         given()
+            //.spec(reqSpec)
         .when()
-            .get("https://restapi.wcaquino.me/usersXML")
+            .get("/usersXML")
         .then()
-            .statusCode(200)
+           // .spec(resSpec)
             .body("users.user.size()", is(3))
             .body("users.user.findAll{it.age.toInteger() <= 25}.size()", is(2))
             .body("users.user.@id", hasItems("1", "2", "3"))
@@ -55,7 +84,7 @@ public class UserXMLTest {
         ArrayList<Node> nomes =
         given()
         .when()
-            .get("https://restapi.wcaquino.me/usersXML")
+            .get("/usersXML")
         .then()
             .statusCode(200)
             .extract().path("users.user.name.findAll{it.toString().contains('n')}");
@@ -69,7 +98,7 @@ public class UserXMLTest {
     public void devoFazerPesquisasAvancadasComXpath(){
         given()
         .when()
-            .get("https://restapi.wcaquino.me/usersXML")
+            .get("/usersXML")
         .then()
             .statusCode(200)
             .body(hasXPath("count(/users/user)", is("3")))
@@ -85,5 +114,32 @@ public class UserXMLTest {
             .body(hasXPath("//user[age < 24]/name", is("Ana Julia")))
             .body(hasXPath("//user[age > 20 and age < 30]/name", is("Maria Joaquina")))
             .body(hasXPath("//user[age > 20][age < 30]/name", is("Maria Joaquina")));
+    }
+
+    @Test
+    public void devoTrabalharComXMLAula23(){
+        RestAssured.baseURI = "https://restapi.wcaquino.me";
+        //RestAssured.port = 80;
+        //RestAssured.basePath = "/v2";
+
+        given()
+        .when()
+            .get("/usersXML/3")
+        .then()
+        .statusCode(200)
+        .rootPath("user")
+        .body("name", is("Ana Julia"))
+        .body("@id", is("3"))
+
+        .rootPath("user.filhos")
+        .body("name.size()", is(2))
+
+        .detachRootPath("filhos")
+        .body("filhos.name[0]", is("Zezinho"))
+
+        .appendRootPath("filhos")
+        .body("name", hasItem("Luizinho"))
+        .body("name", hasItems("Luizinho","Zezinho"))
+        ;
     }
 }
